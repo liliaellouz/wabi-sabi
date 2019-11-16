@@ -1,2 +1,3 @@
 .ipynb_checkpoints
 dataset_cache_OpenAIGPTTokenizer
+__pycache__/*

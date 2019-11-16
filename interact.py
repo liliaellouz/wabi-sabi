@@ -222,7 +222,7 @@ def run():
     random.shuffle(quotes)
     quotes = quotes[:24]
     [personality.append(string_transformer(s, tokenizer)) for s in quotes]
-    print(personality)
+    # print(personality)
     logger.info("Selected personality: %s", tokenizer.decode(chain(*personality)))
 
     history = []

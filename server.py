@@ -1,4 +1,4 @@
-from flask import Flask, json, render_template, redirect
+from flask import Flask, json, render_template, redirect, request, abort
 import re
 from autocorrect import Speller
 
@@ -221,7 +221,7 @@ quotes = ['do not be afraid to ask for yourself',
     'i know that you all might have a little anxiety now but no matter what challenges or setbacks or disappointments you may encounter along the way , you will find true success and happiness if you have only one goal , there really is only one , and that is this : to fulfill the highest most truthful expression of yourself as a human being . you want to max out your humanity by using your energy to lift yourself up , your family and the people around you .', 
     'from time to time you may stumble , fall , you will for sure , you will have questions and you will have doubts about your path . but i know this , if you are willing to be guided by , that still small voice that is the gps within yourself , to find out what makes you come alive , you will be more than okay . you will be happy , you will be successful , and you will make a difference in the world .']
 random.shuffle(quotes)
-quotes = quotes[:24]
+quotes = quotes[:16]
 [personality.append(string_transformer(s, tokenizer)) for s in quotes]
 # print(personality)
 logger.info("Selected personality: %s", tokenizer.decode(chain(*personality)))
@@ -235,15 +235,21 @@ history = []
 
 @api.route('/')
 def index():
-    # return json.dumps('Hello World!!!')
     return render_template('index.html')
 
 @api.route('/answer', methods=['POST'])
 def get_answer():
+    global history
+    global personality
+    global tokenizer
+    global model
+    global args
+
     # get input text
-    if not request.json or not 'input' in request.json:
+    if not request.form or not 'input' in request.form:
         abort(400)
-    raw_text = request.json['input']
+    raw_text = request.form['input']
+    # print(raw_text)
     if not raw_text:
         json.dumps('Prompt should not be empty!')
     
@@ -257,10 +263,17 @@ def get_answer():
 
     # return generated answer
     return json.dumps(out_text)
-    return 'dummy'
 
 @api.route('/reset')
 def reset():
+    global history
+    global personality
+    global tokenizer
+    global model
+    global args
+    global parser
+    global logger
+    global quotes
     print("resetting...")
 
     # reset the conversation
@@ -346,7 +359,7 @@ def reset():
         'i know that you all might have a little anxiety now but no matter what challenges or setbacks or disappointments you may encounter along the way , you will find true success and happiness if you have only one goal , there really is only one , and that is this : to fulfill the highest most truthful expression of yourself as a human being . you want to max out your humanity by using your energy to lift yourself up , your family and the people around you .', 
         'from time to time you may stumble , fall , you will for sure , you will have questions and you will have doubts about your path . but i know this , if you are willing to be guided by , that still small voice that is the gps within yourself , to find out what makes you come alive , you will be more than okay . you will be happy , you will be successful , and you will make a difference in the world .']
     random.shuffle(quotes)
-    quotes = quotes[:24]
+    quotes = quotes[:16]
     [personality.append(string_transformer(s, tokenizer)) for s in quotes]
     # print(personality)
     logger.info("Selected personality: %s", tokenizer.decode(chain(*personality)))

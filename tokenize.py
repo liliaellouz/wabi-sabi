@@ -1,7 +1,8 @@
 
 import re
-from autocorrect import spell
+from autocorrect import Speller
 
+spell = Speller(lang='en')
 
 def rmv_apostrophe(string):
     # specific

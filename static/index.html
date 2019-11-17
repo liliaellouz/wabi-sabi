@@ -34,13 +34,25 @@
 									<span class="online_icon"></span>
 								</div>
 								<div class="user_info">
-									<span>Chat with WabiSabi!</span>
+									<span>Chat with 
+										<div id="persona_sel">
+											<input type="text" placeholder="write a name..." id="persona_ta" list="personas"></input>
+											<datalist id="personas">
+												<option value="Chrome">
+												<option value="Firefox">
+												<option value="Internet Explorer">
+												<option value="Opera">
+												<option value="Safari">
+												<option value="Microsoft Edge">
+											</datalist>
+										</div>
+										<span id="current_persona">{{ name }}!</span></span>
 								</div>
 							</div>
 							<span id="action_menu_btn"><i class="fas fa-ellipsis-v"></i></span>
 							<div class="action_menu">
 								<ul>
-									<li><i class="fas fa-user-circle"></i> Change AI Profile</li>
+									<li id="change_persona"><i class="fas fa-user-circle"></i> Change AI Profile</li>
 									<!-- <li><i class="fas fa-users"></i> Add to close friends</li> -->
 									<li id="reset_convo"><i class="fas fa-plus"></i> New Conversation</li>
 									<!-- <li><i class="fas fa-ban"></i> Block</li> -->
@@ -69,9 +81,9 @@
 						</div>
 						<div class="card-footer">
 							<div class="input-group">
-								<div class="input-group-append">
+								<!-- <div class="input-group-append">
 									<span class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></span>
-								</div>
+								</div> -->
 								<textarea name="" class="form-control type_msg" placeholder="Type your message..." id="input_str"></textarea>
 								<div class="input-group-append" id="send_btn">
 									<span class="input-group-text send_btn"><i class="fas fa-location-arrow"></i></span>

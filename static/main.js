@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    var from_quotes = false;
     $('#persona_sel').hide();
 
     function push_str(text, is_input) {
@@ -40,7 +41,15 @@ $(document).ready(function(){
         window.location.replace('/reset');
     });
 
-    $('li#change_persona').click(function() {
+    $('ul#change_persona li#from_quotes').click(function() {
+        from_quotes = true
+        $('.action_menu').toggle();
+        $('#persona_sel').show();
+        $('#current_persona').hide();
+    });
+
+    $('ul#change_persona li#from_wiki').click(function() {
+        from_quotes = false
         $('.action_menu').toggle();
         $('#persona_sel').show();
         $('#current_persona').hide();
@@ -56,13 +65,23 @@ $(document).ready(function(){
             if(options[i].value === val) {
                 flag = true
                 // build persona
-                $.post( 
-                    '\change_persona',
-                    { input: val },
-                    function(data, status) {
-                        location.reload();
-                    }
-                );
+                if (from_quotes) {
+                    $.post( 
+                        '\change_persona_with_quotes',
+                        { input: val },
+                        function(data, status) {
+                            location.reload();
+                        }
+                    );
+                } else {
+                    $.post( 
+                        '\change_persona_with_backstory',
+                        { input: val },
+                        function(data, status) {
+                            location.reload();
+                        }
+                    );
+                }
             }
         }
 

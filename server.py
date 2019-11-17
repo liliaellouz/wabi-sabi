@@ -1,6 +1,8 @@
 from flask import Flask, json, render_template, redirect, request, abort, render_template_string, session
 import re
 import os
+import nltk
+import wikipedia
 import wikiquotes
 from autocorrect import Speller
 
@@ -46,6 +48,15 @@ def rmv_apostrophe(string):
     return phrase
 
 
+def translate(word):
+    """
+    translates third person words into first person words
+    """
+    forms = {"is" : "am", 'she' : 'I', 'he' : 'I', 'her' : 'my', 'him' : 'me', 'hers' : 'mine', 'your' : 'my', 'has' : 'have'}
+    if word.lower() in forms: 
+        return forms[word.lower()]
+    return word
+
 def string_transformer(string, tokenizer, spell_check=True):
     # handle lowercase, apostrophes, and spaces before periods
     phrase = string.lower()
@@ -55,7 +66,7 @@ def string_transformer(string, tokenizer, spell_check=True):
         phrase = rmv_apostrophe(spell(phrase))
 
     sentence_list = phrase.split('.')
-    sentence_list = [sentence.strip() for sentence in sentence_list]
+    sentence_list = [sentence.strip() for sentence in sentence_list if sentence !='']
     sentence_list = [sentence+' .' for sentence in sentence_list]
 
     tokenized = [tokenizer.encode(sentence) for sentence in sentence_list]
@@ -188,7 +199,10 @@ def init(quotes, quotes_num=16):
     personality =  [string_transformer('my name is WabiSabi', tokenizer, False)]
     random.shuffle(quotes)
     # quotes = quotes[:16]
-    quotes = [q for _, q in zip(range(quotes_num), quotes)]
+    # quotes = [q for _, q in zip(range(quotes_num), quotes)]
+    concatenated = " ".join(quotes)[0:1600]
+    quotes = concatenated.split('.')
+    print(quotes)
     [personality.append(string_transformer(s, tokenizer)) for s in quotes]
     # print(personality)
     logger.info("Selected personality: %s", tokenizer.decode(chain(*personality)))
@@ -287,7 +301,9 @@ quotes = ['do not be afraid to ask for yourself',
     # 'from time to time you may stumble , fall , you will for sure , you will have questions and you will have doubts about your path . but i know this , if you are willing to be guided by , that still small voice that is the gps within yourself , to find out what makes you come alive , you will be more than okay . you will be happy , you will be successful , and you will make a difference in the world .'
     ]
 random.shuffle(quotes)
-quotes = quotes[:16]
+# quotes = quotes[:16]
+concatenated = " ".join(quotes)[0:2000]
+quotes = concatenated.split('.')
 print(quotes)
 [personality.append(string_transformer(s, tokenizer)) for s in quotes]
 # print(personality)
@@ -347,8 +363,8 @@ def get_personas():
     
     return json.dumps(wikiquotes.search(prompt, "english"))
 
-@api.route('/change_persona', methods=['POST'])
-def create_new_persona():
+@api.route('/change_persona_with_quotes', methods=['POST'])
+def create_new_persona_quotes():
     # get input text
     if not request.form or not 'input' in request.form:
         abort(400)
@@ -357,11 +373,35 @@ def create_new_persona():
     if not persona:
         json.dumps('Prompt should not be empty!')
 
-    init(wikiquotes.get_quotes(persona, "english"), 4)
+    init(wikiquotes.get_quotes(persona, "english"))#, 4)
     print("New persona: {}".format(persona))
 
     session['persona'] = persona
     return ''#redirect('/')
+
+
+@api.route('/change_persona_with_backstory', methods=['POST'])
+def create_new_persona_bkstory():
+    # get input text
+    if not request.form or not 'input' in request.form:
+        abort(400)
+    persona = request.form['input']
+    # print(raw_text)
+    if not persona:
+        json.dumps('Prompt should not be empty!')
+
+    person_summary = wikipedia.summary(persona)
+    person_summary = person_summary[0:(person_summary).find('\n')]
+    backstory = [translate(word) for word in nltk.wordpunct_tokenize(person_summary)]
+    # backstory = ' '.join([translate(word) for word in nltk.wordpunct_tokenize(person_summary)])
+    # backstory = backstory[0:1600]
+    # backstory = backstory.split('.')
+    init(backstory)#, 4)
+    print("New persona: {}".format(persona))
+
+    session['persona'] = persona
+    return ''#redirect('/')
+
 
 
 

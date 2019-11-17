@@ -6,5 +6,7 @@ tensorflow  # for tensorboardX
 flask
 re
 os
+nltk
+wikipedia
 wikiquotes
 autocorrect 

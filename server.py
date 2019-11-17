@@ -1,5 +1,6 @@
 from flask import Flask, json, render_template, redirect, request, abort, render_template_string, session
 import re
+import os
 import wikiquotes
 from autocorrect import Speller
 
@@ -132,7 +133,7 @@ def sample_sequence(personality, history, tokenizer, model, args, current_output
 
     return current_output
 
-def init(quotes):
+def init(quotes, quotes_num=16):
     global history
     global personality
     global tokenizer
@@ -186,7 +187,8 @@ def init(quotes):
     logger.info("Get personality")
     personality =  [string_transformer('my name is WabiSabi', tokenizer, False)]
     random.shuffle(quotes)
-    quotes = quotes[:16]
+    # quotes = quotes[:16]
+    quotes = [q for _, q in zip(range(quotes_num), quotes)]
     [personality.append(string_transformer(s, tokenizer)) for s in quotes]
     # print(personality)
     logger.info("Selected personality: %s", tokenizer.decode(chain(*personality)))
@@ -201,6 +203,7 @@ def init(quotes):
 
 
 api = Flask(__name__, template_folder='static')
+api.secret_key = os.urandom(24)
 
 parser = ArgumentParser()
 parser.add_argument("--dataset_path", type=str, default="", help="Path or url of the dataset. If empty download from S3.")
@@ -300,11 +303,12 @@ history = []
 @api.route('/')
 def index():
     persona = 'WabiSabi'
-    if session and session['persona']:
+    if session and session['persona']:        
         persona = session['persona']
+        session.pop('persona')
     return render_template('index.html', name=persona)
 
-@api.route('/answer', methods=['POST'])
+@api.route('/get_answer', methods=['POST'])
 def get_answer():
     global history
     global personality
@@ -331,7 +335,7 @@ def get_answer():
     # return generated answer
     return json.dumps(out_text)
 
-@api.route('/personas', methods=['POST'])
+@api.route('/get_personas', methods=['POST'])
 def get_personas():
     # get input text
     if not request.form or not 'input' in request.form:
@@ -350,12 +354,14 @@ def create_new_persona():
         abort(400)
     persona = request.form['input']
     # print(raw_text)
-    if not prompt:
+    if not persona:
         json.dumps('Prompt should not be empty!')
-    
-    init(wikiquotes.getquotes(persona, "english"))
+
+    init(wikiquotes.get_quotes(persona, "english"), 4)
+    print("New persona: {}".format(persona))
+
     session['persona'] = persona
-    return redirect('/')
+    return ''#redirect('/')
 
 
 

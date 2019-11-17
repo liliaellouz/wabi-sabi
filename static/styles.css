@@ -189,7 +189,7 @@ div#persona_sel {
     display: none;
     display: inline-block;
 }
-#persona_ta {
+#persona_in {
     background-color: rgba(0,0,0,0.3) !important;
     border: 0 !important;
     color: white !important;
@@ -215,8 +215,8 @@ div#persona_sel {
     background-color: rgba(0,0,0,0.5);
     color: white;
     border-radius: 15px;
-    top: 30px;
-    right: 15px;
+    top: 58px;
+    right: 28px;
     display: none;
 }
 .action_menu ul{

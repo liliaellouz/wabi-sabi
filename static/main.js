@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    $('#persona_sel').hide();
 
     function push_str(text, is_input) {
         if (is_input) {
@@ -37,20 +38,41 @@ $(document).ready(function(){
 
     $('li#reset_convo').click(function() {
         window.location.replace('/reset');
-        console.log('reset');
+    });
+
+    $('li#change_persona').click(function() {
+        $('.action_menu').toggle();
+        $('#persona_sel').show();
+        $('#current_persona').hide();
     });
 
     $('div#send_btn').click(function(){
         input_txt = $('#input_str').val();
         $('#input_str').val('')
         push_str(input_txt, true);
-        $.post( '\answer', // 'https://ptsv2.com/t/70v19-1573937191/post',
-                { 
-                    input: input_txt
-                },
+        $.post( 
+            '\answer',
+            { input: input_txt },
+            function(data, status) {
+                push_str(data.replace(/["]+/g, ''), false);
+            }
+        );
+        
+    });
+    $(document).keypress(function(e) {
+        // if user pressed enter
+        if(e.which == 13) {
+            e.preventDefault();
+            input_txt = $('#input_str').val();
+            $('#input_str').val('')
+            push_str(input_txt, true);
+            $.post( 
+                '\answer',
+                { input: input_txt },
                 function(data, status) {
                     push_str(data.replace(/["]+/g, ''), false);
-                })
-        
+                }
+            );
+        }
     });
 });

@@ -22,6 +22,10 @@ body,html{
 }
 .msg_card_body{
     overflow-y: auto;
+    padding-top: 0.75em;
+}
+.card-body{
+    padding: 0.25rem;
 }
 .card-header{
     border-radius: 15px 15px 0 0 !important;
@@ -50,18 +54,21 @@ body,html{
     color:white !important;
     height: 60px !important;
     overflow-y: auto;
+
+    padding-top: 1em;
+    border-radius: 15px 0 0 15px !important;
 }
 .type_msg:focus{
     box-shadow:none !important;
     outline:0px !important;
 }
-.attach_btn{
+/* .attach_btn{
     border-radius: 15px 0 0 15px !important;
     background-color: rgba(0,0,0,0.3) !important;
     border:0 !important;
     color: white !important;
     cursor: pointer;
-}
+} */
 .send_btn{
     border-radius: 0 15px 15px 0 !important;
     background-color: rgba(0,0,0,0.3) !important;
@@ -178,6 +185,19 @@ body,html{
 .msg_head{
     position: relative;
 }
+div#persona_sel {
+    display: none;
+    display: inline-block;
+}
+#persona_ta {
+    background-color: rgba(0,0,0,0.3) !important;
+    border: 0 !important;
+    color: white !important;
+    height: 30px !important;
+    margin-left: 4px;
+    padding-left: 9px; 
+    border-radius: 15px;
+}
 #action_menu_btn{
     position: absolute;
     right: 10px;
@@ -185,6 +205,8 @@ body,html{
     color: white;
     cursor: pointer;
     font-size: 20px;
+
+    padding: 1em;
 }
 .action_menu{
     z-index: 1;
